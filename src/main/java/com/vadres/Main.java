@@ -15,7 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
-	private static Logger logger = Logger.getLogger(Main.class.getName());
+	private static final Logger logger = Logger.getLogger(Main.class.getName());
 	private static String url = "https://imdb-api.com/en/API/Top250Movies/%s";
 	private static final String PATTERN_TITLES = "\"title\":\"([^\"]+)\"";
 	private static final String PATTERN_IMAGES = "\"image\":\"([^\"]+)\"";
