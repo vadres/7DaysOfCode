@@ -1,5 +1,6 @@
 package com.vadres;
 
+import com.vadres.domain.Movie;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.IOException;
@@ -16,11 +17,14 @@ import java.util.regex.Pattern;
 
 public class Main {
 	private static final Logger logger = Logger.getLogger(Main.class.getName());
-	private static String url = "https://imdb-api.com/en/API/Top250Movies/%s";
-	private static final String PATTERN_TITLES = "\"title\":\"([^\"]+)\"";
-	private static final String PATTERN_IMAGES = "\"image\":\"([^\"]+)\"";
+	private static final String PATTERN_MOVIE = "[{]([^}]+)}";
+	private static final String PATTERN_TITLE = "\"title\":\"([^\"]+)\"";
+	private static final String PATTERN_ANO = "\"year\":\"([^\"]+)\"";
+	private static final String PATTERN_URL = "\"image\":\"([^\"]+)\"";
+	private static final String PATTERN_NOTA = "\"imDbRating\":\"([^\"]+)\"";
 
 	public static void main(String ...args) throws URISyntaxException, IOException, InterruptedException {
+		String url = "https://imdb-api.com/en/API/Top250Movies/%s";
 		Dotenv dotenv = Dotenv.configure().load();
 
 		String key = dotenv.get("IMDB_KEY");
@@ -33,22 +37,31 @@ public class Main {
 
 		String json = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
 
-		List<String> titles = parseJson(json, PATTERN_TITLES);
-		List<String> urlImages = parseJson(json, PATTERN_IMAGES);
-
-		logger.info(titles::toString);
-		logger.info(urlImages::toString);
+		parseMovie(json).forEach(movie -> logger.info(movie::toString));
 	}
 
-	private static List<String> parseJson(String json, String patternString) {
+	private static List<Movie> parseMovie(String json) {
+		Pattern pattern = Pattern.compile(PATTERN_MOVIE);
+		Matcher matcher = pattern.matcher(json);
+
+		List<Movie> movies = new ArrayList<>();
+		while(matcher.find()) {
+			String movieJson = matcher.group(1);
+			String titulo = parseAttribute(movieJson, PATTERN_TITLE);
+			String nota = parseAttribute(movieJson, PATTERN_NOTA);
+			String url = parseAttribute(movieJson, PATTERN_URL);
+			String ano = parseAttribute(movieJson, PATTERN_ANO);
+
+			movies.add(new Movie(titulo, url, nota, ano));
+		}
+
+		return movies;
+	}
+
+	private static String parseAttribute(String json, String patternString) {
 		Pattern pattern = Pattern.compile(patternString);
 		Matcher matcher = pattern.matcher(json);
 
-		List<String> titles = new ArrayList<>();
-		while(matcher.find()) {
-			titles.add(matcher.group(1));
-		}
-
-		return titles;
+		return matcher.find()? matcher.group(1): "";
 	}
 }
