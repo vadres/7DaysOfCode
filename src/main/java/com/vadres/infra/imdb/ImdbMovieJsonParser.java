@@ -1,19 +1,21 @@
 package com.vadres.infra.imdb;
 
-import com.vadres.domain.Movie;
+import com.vadres.domain.interfaces.JsonParser;
+import com.vadres.domain.models.Movie;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ImdbMovieJsonParser {
+public class ImdbMovieJsonParser implements JsonParser {
 	private static final String PATTERN_MOVIE = "[{]([^}]+)}";
 	private static final String PATTERN_TITLE = "\"title\":\"([^\"]+)\"";
 	private static final String PATTERN_ANO = "\"year\":\"([^\"]+)\"";
 	private static final String PATTERN_URL = "\"image\":\"([^\"]+)\"";
 	private static final String PATTERN_NOTA = "\"imDbRating\":\"([^\"]+)\"";
 
+	@Override
 	public List<Movie> parse(String json) {
 		Pattern pattern = Pattern.compile(PATTERN_MOVIE);
 		Matcher matcher = pattern.matcher(json);

@@ -1,6 +1,6 @@
 package com.vadres.infra.web;
 
-import com.vadres.domain.Movie;
+import com.vadres.domain.models.Content;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -12,7 +12,7 @@ public class HtmlGenerator {
 		this.writer = writer;
 	}
 
-	public void generate(List<Movie> movies) {
+	public void generate(List<? extends Content> contents) {
 		writer.println("""
             <html>
                 <head>
@@ -25,7 +25,7 @@ public class HtmlGenerator {
                     <div class="row">
         """);
 
-		for (Movie movie : movies) {
+		for (Content content : contents) {
 			String div = """
                   <div class="col-lg-4 col-md-3 col-sm-2"  style="padding: 5px 15px">
                   <div class="card" style="min-height: 100%%;">
@@ -41,7 +41,7 @@ public class HtmlGenerator {
                   </div>
              """;
 
-			writer.println(String.format(div, movie.url(), movie.title(), movie.title(), movie.rating(), movie.year()));
+			writer.println(String.format(div, content.url(), content.title(), content.title(), content.rating(), content.year()));
 		}
 
 
