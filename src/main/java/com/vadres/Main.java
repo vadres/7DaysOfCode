@@ -10,6 +10,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Comparator;
 import java.util.List;
 
 public class Main {
@@ -22,6 +23,7 @@ public class Main {
 
 		JsonParser imdbParser = new ImdbMovieJsonParser();
 		List<? extends Content> contents = imdbParser.parse(json);
+		contents.sort(Comparator.comparing(Content::rating));
 
 		PrintWriter writer = new PrintWriter("content.html");
 		new HtmlGenerator(writer).generate(contents);
